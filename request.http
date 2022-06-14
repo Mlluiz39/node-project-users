@@ -1,0 +1,29 @@
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "Marcelo Luiz",
+  "email": "mlluiz@gmail.com"
+}
+
+###
+
+GET http://localhost:3000/users
+
+###
+
+GET http://localhost:3000/users/0d99d150-3210-4eb0-b621-ee09e477ba0d
+
+###
+
+PUT http://localhost:3000/users/0b1015e0-53fc-4769-befd-e7dfefc45fa5
+Content-Type: application/json
+
+{
+  "name": "Luiz",
+  "email": "luiz@gmail.com"
+}
+
+###
+
+DELETE http://localhost:3000/users/a541d9d5-4b89-402d-8fda-be6513ae0d70
