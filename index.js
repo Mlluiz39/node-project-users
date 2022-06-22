@@ -1,10 +1,11 @@
 const express = require('express')
 const { randomUUID } = require('crypto')
-const fs = require('fs')
-const cors = require('cors')  
+const cors = require('cors')
 
-const port = process.env.PORT || 3001
+const port = process.env.PORT || 3000
 const app = express()
+
+const User = require('./models/User')
 
 app.use(express.json())
 app.use(cors())
@@ -20,34 +21,14 @@ app.use(cors())
 - DELETE: Deletar uma informação no back-end
 */
 
-let users = []
-
-const usersFile = data => {
-  fs.writeFile('users.json', JSON.stringify(users), err => {
-    if (err) {
-      return console.log(err)
-    } else {
-      console.log(data)
-    }
-  })
-}
-
-fs.readFile('users.json', (error, data) => {
-  if (error) {
-    console.log(error)
-  } else {
-    users = JSON.parse(data)
-  }
-})
-
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
   const { name, email } = req.body
   let user = {
     id: randomUUID(),
     name,
     email,
   }
-  users.push(user)
+  await User.create(user)
 
   usersFile('Usuário cadastrado com sucesso')
 
@@ -55,13 +36,13 @@ app.post('/users', (req, res) => {
 })
 
 app.get('/users', (req, res) => {
-  return res.json(users)
+  return res.json(User.findAll())
 })
 
 app.get('/users/:id', (req, res) => {
   //const identificador = req.params.id
   const { id } = req.params
-  const user = users.find(user => user.id === id)
+  const user = User.findIndex(user => user.id === id)
 
   return res.json(user)
 })
@@ -70,15 +51,15 @@ app.put('/users/:id', (req, res) => {
   // - PUT faz alteração completa
   const { id } = req.params // pega o id para alterar
   const { name, email } = req.body // pega os dados enviados no corpo
-  const index = users.findIndex(user => user.id === id) // busca o index do usuário que tem o id passado
-  users[index] = {
-    ...users[index],
+  const index = User.findIndex(user => user.id === id) // busca o index do usuário que tem o id passado
+  User[index] = {
+    ...User[index],
     name,
     email,
   }
   usersFile('Usuário atualizado com sucesso')
 
-  return res.json(users)
+  return res.json(User[index])
 })
 
 app.patch('/users/:id', (req, res) => {
@@ -86,7 +67,7 @@ app.patch('/users/:id', (req, res) => {
   const { id } = req.params
   const { name, email } = req.body
 
-  const user = users.find(user => user.id === id)
+  const user = User.find(user => user.id === id)
 
   if (!user) {
     res.status(404).json({ error: 'User not found!' })
@@ -100,12 +81,12 @@ app.patch('/users/:id', (req, res) => {
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params
 
-  const index = users.findIndex(user => user.id === id)
+  const index = User.findIndex(user => user.id === id)
 
   if (index < 0) {
     return res.status(404).json({ error: 'Usuário não encontrado!' })
   }
-  users.splice(index, 1)
+  User.splice(index, 1)
 
   usersFile('Usuário excluído com sucesso')
 
