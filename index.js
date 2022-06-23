@@ -35,8 +35,9 @@ app.post('/users', async (req, res) => {
   return res.status(201).json(user)
 })
 
-app.get('/users', (req, res) => {
-  return res.json(User.findAll())
+app.get('/users', async(req, res) => {
+const user = await User.findAll()
+  return res.json(user)
 })
 
 app.get('/users/:id', (req, res) => {
