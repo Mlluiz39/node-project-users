@@ -21,41 +21,33 @@ app.use(cors())
 - DELETE: Deletar uma informação no back-end
 */
 
-app.post('/users', async(req, res) => {
+app.post('/users', async (req, res) => {
   const { name, email } = req.body
-  const user = await User.create({id: randomUUID(), name, email})
-
-  usersFile('Usuário cadastrado com sucesso')
+  const user = await User.create({ id: User.id, name, email })
 
   return res.json(user)
 })
 
-app.get('/users', async(req, res) => {
-const user = await User.findAll()
-  return res.json(user)
+app.get('/users', async (req, res) => {
+  const users = await User.findAll()
+  return res.json(users)
 })
 
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', async (req, res) => {
   //const identificador = req.params.id
   const { id } = req.params
-  const user = User.findIndex(user => user.id === id)
+  const user = await User.findByPk(id === id ? id : randomUUID())
 
   return res.json(user)
 })
 
-app.put('/users/:id', (req, res) => {
+app.put('/users/:id', async (req, res) => {
   // - PUT faz alteração completa
   const { id } = req.params // pega o id para alterar
   const { name, email } = req.body // pega os dados enviados no corpo
-  const index = User.findIndex(user => user.id === id) // busca o index do usuário que tem o id passado
-  User[index] = {
-    ...User[index],
-    name,
-    email,
-  }
-  usersFile('Usuário atualizado com sucesso')
+  await User.update({ name, email }, { where: { id } }) // atualiza o usuário
 
-  return res.json(User[index])
+  return res.json(User.findByPk(id))
 })
 
 app.patch('/users/:id', (req, res) => {
@@ -63,10 +55,10 @@ app.patch('/users/:id', (req, res) => {
   const { id } = req.params
   const { name, email } = req.body
 
-  const user = User.find(user => user.id === id)
+  const user = User.update({ where: { id } }, name, email)
 
   if (!user) {
-    res.status(404).json({ error: 'User not found!' })
+    res.status(404).json({ error: 'Usuário não encontrado!' })
   }
   user.name = name
   user.email = email
@@ -77,16 +69,13 @@ app.patch('/users/:id', (req, res) => {
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params
 
-  const index = User.findIndex(user => user.id === id)
+  const index = User.destroy({ where: { id } })
 
   if (index < 0) {
     return res.status(404).json({ error: 'Usuário não encontrado!' })
   }
-  User.splice(index, 1)
 
-  usersFile('Usuário excluído com sucesso')
-
-  return res.status(204).json()
+  return res.json({ message: 'Usuário Deletado!' })
 })
 
 app.listen(port, () =>
