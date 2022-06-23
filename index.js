@@ -23,12 +23,7 @@ app.use(cors())
 
 app.post('/users', async (req, res) => {
   const { name, email } = req.body
-  let user = {
-    id: randomUUID(),
-    name,
-    email,
-  }
-  await User.create(user)
+const user = await User.create({name, email})
 
   usersFile('Usuário cadastrado com sucesso')
 
