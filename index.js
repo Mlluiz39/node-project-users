@@ -21,13 +21,13 @@ app.use(cors())
 - DELETE: Deletar uma informação no back-end
 */
 
-app.post('/users', async (req, res) => {
+app.post('/users', async(req, res) => {
   const { name, email } = req.body
-const user = await User.create({id: randomUUID(), name, email})
+  const user = await User.create({id: randomUUID(), name, email})
 
   usersFile('Usuário cadastrado com sucesso')
 
-  return res.status(201).json(user)
+  return res.json(user)
 })
 
 app.get('/users', async(req, res) => {
