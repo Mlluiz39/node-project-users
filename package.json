@@ -4,7 +4,6 @@
   "description": "primeiro projeto node",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "node index.js"
   },
